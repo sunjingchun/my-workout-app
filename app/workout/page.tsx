@@ -8,23 +8,6 @@ import {
   GenerateWorkoutPlanRequest,
 } from "@/types/workout";
 
-// 还是沿用你原来的 mockPlan（我略掉内容，只保留结构提示）
-const mockPlan: WeeklyWorkoutPlan = {
-  strategySummary:
-    "家用器械（哑铃 + 徒手）三天训练：推 / 拉 / 腿，配合 2–3 次低强度有氧，目标是增肌 + 体脂略微下降。",
-  frequencySuggestion: "建议每周 3 天力量训练 + 2 次 30 分钟散步/慢跑有氧。",
-  splitType: "Push / Pull / Legs（三分化）",
-  weeklyPlan: [
-    // ... 这里保留你之前的 Day1/Day2/Day3 计划 ...
-  ],
-  nextSessionPlan: {
-    // ... 你之前写的 nextSessionPlan ...
-  },
-  injuryWarnings:
-    "如出现明显关节疼痛（刺痛/卡顿感），立即停止相关动作，改用更加温和的替代动作，并优先确认动作标准；持续不适请咨询医生或康复师。",
-  equipmentDisclaimer:
-    "本计划默认在家中使用基础器械（哑铃、弹力带、徒手），无教练一对一指导。请根据自身情况选择合适重量，确保动作可控，不要为了追求重量牺牲动作质量。",
-};
 
 export default function WorkoutPage() {
   const [plan, setPlan] = useState<WeeklyWorkoutPlan | null>(null);
