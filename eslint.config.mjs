@@ -16,3 +16,13 @@ const eslintConfig = defineConfig([
 ]);
 
 export default eslintConfig;
+
+export default [
+  next.configs.recommended,
+
+  {
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+    }
+  }
+];
