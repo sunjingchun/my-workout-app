@@ -1,87 +1,64 @@
-// app/components/RefineForm.tsx
 "use client";
 
-import { useState } from "react";
-import type { WeeklyWorkoutPlan } from "@/types/workout";
+import React, { useState } from "react";
 
 interface RefineFormProps {
-  previousPlan: WeeklyWorkoutPlan | null;
-  onRefined: (newPlan: WeeklyWorkoutPlan) => void;
+  disabled?: boolean;
+  loading?: boolean;
+  error?: string | null;
+  onRefine: (refineText: string) => Promise<void> | void;
 }
 
-export default function RefineForm({ previousPlan, onRefined }: RefineFormProps) {
-  const [feedback, setFeedback] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+export default function RefineForm({
+  disabled,
+  loading,
+  error,
+  onRefine,
+}: RefineFormProps) {
+  const [text, setText] = useState("");
 
-  const handleRefine = async () => {
-    if (!previousPlan) {
-      alert("请先生成一份训练计划，再进行微调。");
-      return;
-    }
-    if (!feedback.trim()) {
-      alert("请先在输入框中写下你想微调的内容。");
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const payload = {
-        previousPlan,
-        feedback,
-      };
-
-      const res = await fetch("/api/workout/refine", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "微调计划生成失败");
-      }
-
-      onRefined(data); // 通知父组件，用新计划替换旧计划
-    } catch (err: any) {
-      console.error("微调失败：", err);
-      setError(err.message || "微调失败，请稍后重试");
-    } finally {
-      setLoading(false);
-    }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!text.trim()) return;
+    await onRefine(text.trim());
+    // 不强制清空，你可以根据习惯改成 setText("")
   };
 
   return (
-    <div className="p-4 border rounded bg-gray-50 space-y-4">
-      <h2 className="text-lg font-semibold">微调当前训练计划</h2>
-
-      <p className="text-xs text-gray-600">
-        例子：<br />
-        · 深蹲有点重，想整体把下肢动作强度稍微降一点；<br />
-        · 膝盖有点不适，去掉跳跃类动作；<br />
-        · 上肢感觉太轻，可以把推举类动作增加一组。
+    <form
+      onSubmit={handleSubmit}
+      className="p-4 border rounded bg-gray-50 space-y-3"
+    >
+      <h3 className="text-lg font-semibold">对当前计划做微调</h3>
+      <p className="text-xs text-gray-500">
+        例：&ldquo;周一的动作太多了，改成 3 个动作，每个 3 组即可&rdquo;、
+        &ldquo;有膝盖伤史，深蹲改成臀桥 + 硬拉&rdquo; 等。
       </p>
 
       <textarea
+        className="w-full rounded border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/40"
         rows={3}
-        className="w-full border rounded px-2 py-1 text-sm"
-        placeholder="写下你对当前计划的微调需求…"
-        value={feedback}
-        onChange={(e) => setFeedback(e.target.value)}
+        placeholder="在这里写下你想微调的地方……"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        disabled={disabled || loading}
       />
 
+      {error && <p className="text-xs text-red-600">{error}</p>}
+
       <button
-        type="button"
-        onClick={handleRefine}
-        disabled={loading}
-        className="px-3 py-1.5 rounded bg-blue-600 text-white text-sm disabled:opacity-60"
+        type="submit"
+        disabled={disabled || loading}
+        className="px-4 py-2 rounded bg-black text-white text-sm disabled:bg-gray-400"
       >
-        {loading ? "微调中…" : "微调当前计划"}
+        {loading ? "正在微调…" : "微调当前计划"}
       </button>
 
-      {error && <p className="text-xs text-red-600">错误：{error}</p>}
-    </div>
+      {disabled && (
+        <p className="text-[11px] text-gray-400">
+          请先在上方生成一份训练计划，再进行微调。
+        </p>
+      )}
+    </form>
   );
 }
