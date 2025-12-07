@@ -35,8 +35,12 @@ export interface Exercise {
 
 // 单个训练日
 export interface DayPlan {
-  day: string;   // 比如 "Monday" / "Wednesday"
-  focus: string; // 训练重点，如 "全身力量基础训练"
+  // 可选的展示标签，比如 "Monday" / "周一" / "Day 1"
+  dayLabel?: string;
+
+  title: string;
+  focus: string;
+  warmup?: string;
   exercises: Exercise[];
   cardio?: {
     type: string;
