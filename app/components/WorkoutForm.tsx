@@ -59,6 +59,7 @@ export default function WorkoutForm({ loading, onSubmit }: WorkoutFormProps) {
       age: age ? Number(age) : null,
       gender,
       trainingExperience,
+      experienceLevel: trainingExperience, // ← 新增：照填即可
     };
 
     const trainingPreference: TrainingPreference = {
